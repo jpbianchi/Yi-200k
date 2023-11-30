@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request
 from pydantic import BaseModel
 import modal
 from dataclasses import dataclass
-import json
+import json, os
 import requests
 
 app = FastAPI()
@@ -32,17 +32,23 @@ async def read_item(item_name: str):
 class Prompt(BaseModel):
     prompt: str = "What is your name?"
     model: str = "01-ai/Yi-6B"
+    system_message: str = "You are an exert in Artificial Intelligence"
 
 
 @app.post("/llm_prompt/")
 async def llm_prompt(data: Prompt):
 
+    # to call modal directly, make sure the MODAL tokens are in the environment
+    # on render.com, I did put them in a .env file, so I have to load them manually
     # f = modal.Function.lookup("GPU_server", "llm_prompt")
     # answer = f.remote(prompt=data.prompt, model=data.model)
+    
     url = "https://jpbianchi--gpu-server-llm-prompt.modal.run/"
     answer = requests.post(url, 
                            json={"prompt":data.prompt, 
-                                 "model":data.model})
+                                 "model":data.model,
+                                 "system_message":data.system_message},
+                           )
     return {"answer": answer.text}
 
 
