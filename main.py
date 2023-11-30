@@ -1,39 +1,59 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from pydantic import BaseModel
 import modal
+from dataclasses import dataclass
+import json
 
 app = FastAPI()
 
-# A simple model to structure the data you receive
+@app.get("/")
+async def read_root():
+    return {"message": "Welcome to my GPU server!"}
+
+
 class Item(BaseModel):
-    name: str
-    description: str = None
+    item_name: str
     price: float
-    tax: float = None
 
 # In-memory storage for demonstration
-items = {1:2}
+items = {}
 
-@app.post("/items/")
+@app.get("/items/")
 async def create_item(item: Item):
-    items[item.name] = item
+    items[item.item_name] = item.price
     return item
 
 @app.get("/items/{item_name}")
 async def read_item(item_name: str):
     return items.get(item_name)
 
+
+class Prompt(BaseModel):
+    prompt: str
+    model: str = "01-ai/Yi-6B"
+
+
 @app.post("/llm_prompt/")
-async def llm_prompt(prompt: str = "What is your name?", modelname: str ="01-ai/Yi-6B"):
+async def llm_prompt(data: Prompt):
 
     f = modal.Function.lookup("GPU_server", "llm_prompt")
-    answer = f.remote(modelname, prompt)
+    answer = f.remote(data.prompt, data.model)
     return {"answer": answer}
 
-@app.post("/test/")
-async def llm_prompt(somestr: str = "What is your name?"):
 
-    return {"answer": somestr}
+@app.post("/test/")
+async def test(request: Request):
+    """ Pass only one string parameter"""
+    body_str = await request.body()  # body for 1 parameter
+    body_str = body_str.decode("utf-8")  # Decode bytes to string
+
+    return body_str
+    
+    
+@app.post("/test2/")
+async def llm_prompt2(data: Prompt):
+    """ Pass as many parameters as you want, as defined in the Pydantic class"""
+    return data
 
 
 # To deploy simply click:
