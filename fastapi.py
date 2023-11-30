@@ -11,7 +11,7 @@ class Item(BaseModel):
     tax: float = None
 
 # In-memory storage for demonstration
-items = {}
+items = {1:2}
 
 @app.post("/items/")
 async def create_item(item: Item):
