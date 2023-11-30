@@ -3,6 +3,7 @@ from pydantic import BaseModel
 import modal
 from dataclasses import dataclass
 import json
+import requests
 
 app = FastAPI()
 
@@ -36,8 +37,12 @@ class Prompt(BaseModel):
 @app.post("/llm_prompt/")
 async def llm_prompt(data: Prompt):
 
-    f = modal.Function.lookup("GPU_server", "llm_prompt")
-    answer = f.remote(prompt=data.prompt, model=data.model)
+    # f = modal.Function.lookup("GPU_server", "llm_prompt")
+    # answer = f.remote(prompt=data.prompt, model=data.model)
+    url = "https://jpbianchi--gpu-server-llm-prompt.modal.run/"
+    answer = requests.post(url, 
+                           json={"prompt":data.prompt, 
+                                 "model":data.model})
     return {"answer": answer}
 
 
