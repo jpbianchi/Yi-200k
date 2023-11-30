@@ -29,3 +29,12 @@ async def llm_prompt(prompt: str = "What is your name?", modelname: str ="01-ai/
     f = modal.Function.lookup("GPU_server", "llm_prompt")
     answer = f.remote(modelname, prompt)
     return {"answer": answer}
+
+@app.post("/test/")
+async def llm_prompt(somestr: str = "What is your name?"):
+
+    return {"answer": somestr}
+
+
+# To deploy simply click:
+# [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/render-examples/fastapi)
