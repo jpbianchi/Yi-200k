@@ -29,7 +29,7 @@ async def read_item(item_name: str):
 
 
 class Prompt(BaseModel):
-    prompt: str
+    prompt: str = "What is your name?"
     model: str = "01-ai/Yi-6B"
 
 
@@ -37,7 +37,7 @@ class Prompt(BaseModel):
 async def llm_prompt(data: Prompt):
 
     f = modal.Function.lookup("GPU_server", "llm_prompt")
-    answer = f.remote(data.prompt, data.model)
+    answer = f.remote(prompt=data.prompt, model=data.model)
     return {"answer": answer}
 
 
