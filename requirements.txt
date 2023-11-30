@@ -1,8 +1,8 @@
 # python==3.11.5
 openai==1.3.5
-langchain==0.0.342
-langchain-core==0.0.7
-langchain-experimental==0.0.43
+# langchain==0.0.342
+# langchain-core==0.0.7
+# langchain-experimental==0.0.43
 langsmith==0.0.66
 tiktoken==0.5.1
 docarray==0.39.1
@@ -22,4 +22,7 @@ pathlib
 ipykernel
 python-dotenv
 tdqm
+poetry
+fastapi
+uvicorn
 
