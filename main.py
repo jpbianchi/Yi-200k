@@ -43,7 +43,7 @@ async def llm_prompt(data: Prompt):
     answer = requests.post(url, 
                            json={"prompt":data.prompt, 
                                  "model":data.model})
-    return {"answer": answer}
+    return {"answer": answer.text}
 
 
 @app.post("/test/")
