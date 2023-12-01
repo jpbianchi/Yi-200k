@@ -4,6 +4,7 @@ import modal
 from dataclasses import dataclass
 import json, os
 import requests
+import hashlib 
 
 app = FastAPI()
 
@@ -33,6 +34,7 @@ class Prompt(BaseModel):
     prompt: str = "What is your name?"
     model: str = "01-ai/Yi-6B"
     system_message: str = "You are an exert in Artificial Intelligence"
+    token: str = "abcd"
 
 
 @app.post("/llm_prompt/")
@@ -43,6 +45,9 @@ async def llm_prompt(data: Prompt):
     # f = modal.Function.lookup("GPU_server", "llm_prompt")
     # answer = f.remote(prompt=data.prompt, model=data.model)
     
+    if hashlib.sha256(data.token.encode()).hexdigest() != "1b055d8da2ab450b22cb8b10ed28a64c47c5a3417c0dfddc5665f45f703b3ab3":
+        return {"answer": f"Wrong token"}
+
     url = "https://jpbianchi--gpu-server-llm-prompt.modal.run/"
     answer = requests.post(url, 
                            json={"prompt":data.prompt, 
